@@ -6,7 +6,6 @@
 [![LangGraph 0.2](https://img.shields.io/badge/LangGraph-0.2-purple.svg)](https://langchain-ai.github.io/langgraph/)
 [![FastAPI 0.115](https://img.shields.io/badge/FastAPI-0.115-green.svg)](https://fastapi.tiangolo.com)
 [![Tests](https://img.shields.io/badge/Tests-47%2F47%20passed-brightgreen.svg)](#)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-ff4b4b?logo=streamlit)](https://gridmind-sentinel.streamlit.app)
 
 A portfolio-grade autonomous system that monitors simulated power grid telemetry, detects faults using wavelet signal analysis, retrieves remediation procedures from IEC/IEEE standards via a hybrid RAG pipeline, and governs all actions through deterministic safety guardrails — all orchestrated by a 5-node LangGraph multi-agent workflow.
 
@@ -225,30 +224,6 @@ gridmind-sentinel/
 └── tests/
     ├── test_agents.py   # 22 agent pipeline tests
     └── test_rag.py      # 25 RAG pipeline tests
-```
-
----
-
-## Live Demo
-
-**🚀 [gridmind-sentinel.streamlit.app](https://gridmind-sentinel.streamlit.app)**
-
-The dashboard runs in **Demo Mode** by default — no backend required. All 5 tabs are fully populated with pre-computed benchmark data from the actual test runs described above.
-
-To run the full multi-agent pipeline locally:
-
-```bash
-# 1. Clone & install
-git clone https://github.com/rajeev-333/gridmind-sentinel.git
-cd gridmind-sentinel
-pip install -r requirements.txt
-
-# 2. Start the FastAPI backend
-uvicorn src.api.main:app --host 0.0.0.0 --port 8000
-
-# 3. Launch the Streamlit dashboard
-streamlit run dashboard/app.py
-# Toggle off "Demo Mode" in the sidebar to connect to the live backend
 ```
 
 ---

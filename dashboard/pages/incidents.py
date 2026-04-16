@@ -3,8 +3,6 @@ Incidents Tab — dashboard/pages/incidents.py
 
 Searchable/filterable table of all past incidents.
 Click any row to expand the full incident JSON.
-
-Demo Mode: When api_url is None, uses pre-seeded data from demo_data.py.
 """
 
 from __future__ import annotations
@@ -32,12 +30,8 @@ def _fetch_incidents(api_url: str, severity: str = "", fault_type: str = "") -> 
 SEVERITY_ORDER = {"LOW": 0, "MEDIUM": 1, "HIGH": 2, "CRITICAL": 3}
 
 
-def render(api_url: str | None):
-    from dashboard.demo_data import DEMO_INCIDENTS
-
+def render(api_url: str):
     st.subheader("📋 Incident History")
-
-    is_demo = api_url is None
 
     # ── Filter row ────────────────────────────────────────────────────────
     fc1, fc2, fc3 = st.columns([2, 2, 3])
@@ -61,18 +55,10 @@ def render(api_url: str | None):
             key="inc_search",
         )
 
-    # ── Fetch / load data ─────────────────────────────────────────────────
-    if is_demo:
-        incidents = list(DEMO_INCIDENTS)
-        # Apply filters client-side for demo data
-        if sev_filter != "All":
-            incidents = [i for i in incidents if i.get("severity") == sev_filter]
-        if ft_filter != "All":
-            incidents = [i for i in incidents if i.get("fault_type") == ft_filter]
-    else:
-        sev_q = sev_filter if sev_filter != "All" else ""
-        ft_q  = ft_filter  if ft_filter  != "All" else ""
-        incidents = _fetch_incidents(api_url, severity=sev_q, fault_type=ft_q)
+    # ── Fetch data ────────────────────────────────────────────────────────
+    sev_q = sev_filter if sev_filter != "All" else ""
+    ft_q  = ft_filter  if ft_filter  != "All" else ""
+    incidents = _fetch_incidents(api_url, severity=sev_q, fault_type=ft_q)
 
     # Client-side text search
     if search:
@@ -144,19 +130,16 @@ def render(api_url: str | None):
         with st.expander("📄 Raw Incident JSON", expanded=True):
             st.json(inc)
 
-        # Human approval for blocked — only in live mode
+        # Human approval for blocked
         if inc.get("guardrail_status") == "BLOCK" and not inc.get("resolved"):
             st.warning("⛔ This incident is currently BLOCKED — awaiting human approval.")
-            if is_demo:
-                st.info("🔌 Connect to a live API to approve blocked incidents.")
-            else:
-                iid = inc.get("incident_id", "")
-                if st.button(f"✅ Approve {iid[:8]}...", key="json_approve"):
-                    try:
-                        resp = httpx.post(f"{api_url}/approve/{iid}", timeout=10)
-                        if resp.status_code == 200:
-                            st.success("Approved! Refresh the page to see updated status.")
-                        else:
-                            st.error(f"Failed: {resp.text}")
-                    except Exception as e:
-                        st.error(f"Error: {e}")
+            iid = inc.get("incident_id", "")
+            if st.button(f"✅ Approve {iid[:8]}...", key="json_approve"):
+                try:
+                    resp = httpx.post(f"{api_url}/approve/{iid}", timeout=10)
+                    if resp.status_code == 200:
+                        st.success("Approved! Refresh the page to see updated status.")
+                    else:
+                        st.error(f"Failed: {resp.text}")
+                except Exception as e:
+                    st.error(f"Error: {e}")

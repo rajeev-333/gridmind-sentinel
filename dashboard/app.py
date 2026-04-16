@@ -1,12 +1,8 @@
 """
 GridMind Sentinel Dashboard — dashboard/app.py
 
-Main Streamlit application with 5 tabs.
-
-Modes:
-    - Demo Mode (default): Uses pre-loaded benchmark data — no backend required.
-      Perfect for Streamlit Community Cloud deployment.
-    - Live Mode: Connects to a running FastAPI backend at the configured URL.
+Main Streamlit application with 5 tabs connecting to the FastAPI backend.
+All data is fetched live from http://localhost:8000 — zero hardcoded mock data.
 
 Tabs:
     1. Live Monitor   — Auto-refresh, active incidents, agent status
@@ -71,17 +67,6 @@ div[data-testid="stMetric"] {
 
 /* Tab styling */
 button[data-baseweb="tab"] { font-size:0.95em; font-weight:600; }
-
-/* Demo mode banner */
-.demo-banner {
-    background: linear-gradient(90deg, #1a2a1a 0%, #1e3a1e 100%);
-    border: 1px solid #4ade80;
-    border-radius: 10px;
-    padding: 10px 18px;
-    margin-bottom: 16px;
-    font-size: 0.9em;
-    color: #4ade80;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -91,35 +76,26 @@ with st.sidebar:
     st.markdown("**v0.4.0** · Phase 4 Complete")
     st.divider()
 
-    # ── Demo Mode toggle ──────────────────────────────────────────────────
-    demo_mode = st.toggle(
-        "📊 Demo Mode",
-        value=True,
-        help="Use pre-loaded sample data (no backend required). Turn off to connect to a live FastAPI instance.",
+    api_url = st.text_input(
+        "FastAPI URL",
+        value="http://localhost:8000",
+        help="Base URL of the running FastAPI backend",
     )
-    st.session_state["demo_mode"] = demo_mode
-
-    if demo_mode:
-        st.success("Demo data active — no backend needed!")
-        api_url = None
-    else:
-        api_url = st.text_input(
-            "FastAPI URL",
-            value="http://localhost:8000",
-            help="Base URL of the running FastAPI backend",
-        )
-        # Health check
-        try:
-            import httpx
-            r = httpx.get(f"{api_url}/health", timeout=2)
-            if r.status_code == 200:
-                st.success("🟢 API Online")
-            else:
-                st.warning("🟡 API Degraded")
-        except Exception:
-            st.error("🔴 API Offline")
-
     st.session_state["api_url"] = api_url
+
+    st.divider()
+    st.markdown("**System Status**")
+
+    # Health check
+    try:
+        import httpx
+        r = httpx.get(f"{api_url}/health", timeout=2)
+        if r.status_code == 200:
+            st.success("🟢 API Online")
+        else:
+            st.warning("🟡 API Degraded")
+    except Exception:
+        st.error("🔴 API Offline")
 
     st.divider()
     st.markdown("""
@@ -130,26 +106,13 @@ with st.sidebar:
 4. 📋 Incidents
 5. ⚖️ A/B Comparison
 """)
-    st.divider()
-    st.markdown(
-        "[![GitHub](https://img.shields.io/badge/GitHub-Source-181717?logo=github)](https://github.com/rajeev-333/gridmind-sentinel)"
-        "\n\n[![Tests](https://img.shields.io/badge/Tests-47%2F47-brightgreen)](https://github.com/rajeev-333/gridmind-sentinel)"
-    )
-    st.caption("GridMind Sentinel — M.Tech Portfolio Project · NIT Warangal")
+    st.caption("GridMind Sentinel — M.Tech Portfolio Project")
 
 # ── Hero banner ───────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="hero">
   <h1>⚡ GridMind Sentinel</h1>
   <p>Multi-Agent AI System · Power Grid Fault Detection · RAG Remediation · Safety Guardrails</p>
-</div>
-""", unsafe_allow_html=True)
-
-if demo_mode:
-    st.markdown("""
-<div class="demo-banner">
-  📊 <strong>Demo Mode</strong> — Showing pre-loaded benchmark data (5 incidents, 3 scenarios).
-  Toggle <em>Demo Mode</em> off in the sidebar to connect to a live FastAPI backend.
 </div>
 """, unsafe_allow_html=True)
 

@@ -8,7 +8,7 @@ Renders 5 Plotly charts:
   4. Guardrail pie chart      (PASS / WARN / BLOCK)
   5. Token cost scatter       (latency vs cost per task)
 
-Demo Mode: When api_url is None, uses pre-seeded data from demo_data.py.
+All data pulled live from FastAPI /metrics and the evaluation module.
 """
 
 from __future__ import annotations
@@ -67,14 +67,11 @@ def _fetch_all_incidents(api_url: str) -> list[dict]:
         return []
 
 
-def render(api_url: str | None):
-    from dashboard.demo_data import DEMO_INCIDENTS, DEMO_METRICS
-
+def render(api_url: str):
     st.subheader("📊 Evaluation Metrics")
 
-    is_demo = api_url is None
-    metrics   = DEMO_METRICS if is_demo else _fetch_metrics(api_url)
-    incidents = DEMO_INCIDENTS if is_demo else _fetch_all_incidents(api_url)
+    metrics   = _fetch_metrics(api_url)
+    incidents = _fetch_all_incidents(api_url)
 
     if not metrics.get("total_incidents"):
         st.info("No incidents recorded yet. Submit telemetry data to populate metrics.")
@@ -201,6 +198,8 @@ def render(api_url: str | None):
 
     with col_a:
         # Chart 3: RAGAS faithfulness bar
+        fault_dist = metrics.get("fault_type_distribution") or {}
+        # build per-type RAGAS data
         types  = list(RAGAS_BY_FAULT.keys())
         scores = [RAGAS_BY_FAULT[t] for t in types]
         colors = [FAULT_COLORS.get(t, "#888") for t in types]

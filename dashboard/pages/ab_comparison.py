@@ -1,11 +1,8 @@
 """
 A/B Comparison Tab — dashboard/pages/ab_comparison.py
 
-Compares v1 (no reranker) vs v2 (with reranker) benchmark results.
-
-Demo Mode: When api_url is None, uses pre-computed results from demo_data.py
-           (matching the README benchmark table exactly).
-Live Mode: Runs 5 scenarios via the live API using run_ab_benchmark().
+Runs the 5 benchmark scenarios via the live API and shows side-by-side
+v1 (no reranker, simulated) vs v2 (with reranker) comparison.
 """
 
 from __future__ import annotations
@@ -23,14 +20,12 @@ PLOTLY_DARK = {
 }
 
 
-def render(api_url: str | None):
-    from dashboard.demo_data import DEMO_AB_RESULTS
-
+def render(api_url: str):
     st.subheader("⚖️ A/B Comparison: v1 vs v2")
     st.markdown(
         "Compares **Agent v1** (FAISS + BM25 raw, no reranker) against "
         "**Agent v2** (FAISS + BM25 + Cross-encoder reranker) across 5 "
-        "benchmark scenarios."
+        "benchmark scenarios. Click **Run Benchmark** to start."
     )
 
     st.info(
@@ -39,25 +34,18 @@ def render(api_url: str | None):
         "since it skips the cross-encoder reranking step."
     )
 
-    is_demo = api_url is None
+    if st.button("▶️ Run A/B Benchmark (5 scenarios)", key="run_ab", use_container_width=True):
+        with st.spinner("Running 5 scenarios via live API..."):
+            import sys, os
+            sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+            from src.evaluation.benchmark import run_ab_benchmark
+            results = run_ab_benchmark(api_base=api_url)
+            st.session_state["ab_results"] = results
 
-    if is_demo:
-        # In demo mode, show pre-computed results immediately
-        results = DEMO_AB_RESULTS
-        st.success("📊 Showing pre-computed benchmark results from the README §A/B Comparison table.")
-    else:
-        if st.button("▶️ Run A/B Benchmark (5 scenarios)", key="run_ab", use_container_width=True):
-            with st.spinner("Running 5 scenarios via live API..."):
-                import sys, os
-                sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-                from src.evaluation.benchmark import run_ab_benchmark
-                results = run_ab_benchmark(api_base=api_url)
-                st.session_state["ab_results"] = results
-
-        results = st.session_state.get("ab_results", [])
-        if not results:
-            st.caption("Results will appear here after running the benchmark.")
-            return
+    results = st.session_state.get("ab_results", [])
+    if not results:
+        st.caption("Results will appear here after running the benchmark.")
+        return
 
     # ── Summary table ─────────────────────────────────────────────────────
     st.divider()

@@ -3,8 +3,6 @@ Agent Traces Tab — dashboard/pages/traces.py
 
 Shows a per-incident trace viewer. Incidents listed in a table;
 clicking expands the full agent_trace with step timings and I/O.
-
-Demo Mode: When api_url is None, uses pre-seeded data from demo_data.py.
 """
 
 from __future__ import annotations
@@ -48,15 +46,11 @@ SEVERITY_COLORS = {
 }
 
 
-def render(api_url: str | None):
-    from dashboard.demo_data import DEMO_INCIDENTS
-
+def render(api_url: str):
     st.subheader("🔬 Agent Traces")
     st.caption("Expand any incident to see the full multi-agent execution trace.")
 
-    is_demo = api_url is None
-    incidents = DEMO_INCIDENTS if is_demo else _fetch_incidents(api_url)
-
+    incidents = _fetch_incidents(api_url)
     if not incidents:
         st.info("No incidents yet — submit telemetry to see agent traces.")
         return
@@ -115,15 +109,12 @@ def render(api_url: str | None):
             f"**{inc.get('fault_type','—').replace('_',' ').title()}** · "
             f"{sev} · {gs} · {iid[:8]}...",
         ):
-            # In demo mode use embedded agent_trace; in live mode re-fetch
-            if is_demo:
-                detailed = inc
-            else:
-                detailed = _fetch_incident(api_url, iid)
-
+            # Re-fetch to get agent_trace from the stored result
+            # (the list endpoint may not include traces for brevity)
+            detailed = _fetch_incident(api_url, iid)
+            # If the detailed fetch works use it; otherwise fall back
             steps = detailed.get("action_steps") or inc.get("action_steps", [])
             refs  = detailed.get("references") or []
-            trace = detailed.get("agent_trace", {})
 
             # Summary row
             rc1, rc2, rc3 = st.columns(3)
@@ -141,24 +132,17 @@ def render(api_url: str | None):
 
             for j, node in enumerate(nodes_in_order):
                 icon = NODE_ICONS.get(node, "⚙️")
-                node_data = trace.get(node, {})
-                lat_str = f" `{node_data.get('latency_ms', '~')}ms`" if node_data else ""
+                elapsed = "~0 ms"
                 status_note = ""
                 if node == "guardrail_engine":
-                    gstatus = node_data.get("status", gs)
-                    kw = node_data.get("triggered_keywords", [])
-                    kw_str = f" · keywords: {kw}" if kw else " · no dangerous ops"
-                    status_note = f" → **{gstatus}**{kw_str}"
+                    status_note = f" → **{gs}**"
                 elif node == "report_generator":
                     resolved = "✅ Resolved" if inc.get("resolved") else "🔒 Awaiting Approval"
                     status_note = f" → {resolved}"
-                elif node == "remediation_agent":
-                    docs = node_data.get("rag_docs", 5)
-                    status_note = f" → {docs} docs retrieved"
 
                 st.markdown(
                     f"&nbsp;&nbsp;{'└─' if j == len(nodes_in_order)-1 else '├─'} "
-                    f"{icon} `{node}`{lat_str}{status_note}",
+                    f"{icon} `{node}`{status_note}",
                     unsafe_allow_html=True,
                 )
 
@@ -175,15 +159,12 @@ def render(api_url: str | None):
                     "⛔ **BLOCKED**: This incident requires human approval before "
                     "proceeding with switching operations."
                 )
-                if not is_demo:
-                    if st.button(f"✅ Approve Incident {iid[:8]}...", key=f"approve_{iid}"):
-                        try:
-                            resp = httpx.post(f"{api_url}/approve/{iid}", timeout=10)
-                            if resp.status_code == 200:
-                                st.success("Incident approved! Refresh to see updated status.")
-                            else:
-                                st.error(f"Approval failed: {resp.text}")
-                        except Exception as e:
-                            st.error(f"Error: {e}")
-                else:
-                    st.info("🔌 Connect to a live API to approve blocked incidents.")
+                if st.button(f"✅ Approve Incident {iid[:8]}...", key=f"approve_{iid}"):
+                    try:
+                        resp = httpx.post(f"{api_url}/approve/{iid}", timeout=10)
+                        if resp.status_code == 200:
+                            st.success("Incident approved! Refresh to see updated status.")
+                        else:
+                            st.error(f"Approval failed: {resp.text}")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
