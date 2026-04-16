@@ -1,0 +1,96 @@
+IEC 61968 — Overcurrent Protection Coordination Procedures
+============================================================
+
+Section 1: Scope
+
+This document defines the standard procedures for overcurrent fault detection,
+protection relay coordination, and circuit interruption in power distribution
+systems per IEC 61968 (Application Integration at Electric Utilities) and
+IEC 60255 (Measuring Relays and Protection Equipment). It covers both phase
+overcurrent and ground fault overcurrent scenarios.
+
+Section 2: Overcurrent Fault Types
+
+2.1 Phase Overcurrent
+Occurs when the current in one or more phase conductors exceeds the relay
+pickup setting. Common causes include:
+  - Short circuit between phases (phase-to-phase fault)
+  - Overloaded feeder beyond thermal rating
+  - Stalled motor load drawing locked-rotor current (typically 6-8x rated)
+
+2.2 Ground Fault Overcurrent
+Occurs when fault current flows through the ground return path. Detected by
+residual current measurement (sum of three phase currents). Common causes:
+  - Single-line-to-ground (SLG) fault due to insulation failure
+  - Tree contact with overhead line
+  - Cable dig-in on underground feeders
+
+Section 3: Protection Relay Settings
+
+3.1 Pickup Current (Threshold)
+The overcurrent relay pickup shall be set at 125-150% of the maximum expected
+load current for the protected feeder, per IEC 60255-151. This provides a
+margin above normal load variations while ensuring reliable fault detection.
+
+  Ipickup = 1.25 × Iload_max (minimum)
+  Ipickup = 1.50 × Iload_max (recommended for feeders with high load variance)
+
+3.2 Time-Current Characteristics
+Standard inverse-time curves per IEC 60255-151:
+  - Standard Inverse (SI): t = 0.14 / (I^0.02 - 1) × TMS
+  - Very Inverse (VI): t = 13.5 / (I - 1) × TMS
+  - Extremely Inverse (EI): t = 80.0 / (I^2 - 1) × TMS
+
+Where I is the ratio of fault current to pickup current, and TMS is the Time
+Multiplier Setting. The choice of curve depends on the downstream load
+characteristics and coordination requirements.
+
+3.3 Instantaneous Element
+The instantaneous overcurrent element shall be set at 6-10x the relay pickup
+current to provide fast clearance for close-in faults. Typical clearing
+time: 50-80 ms (3-5 cycles at 50 Hz).
+
+Section 4: Coordination Principles
+
+4.1 Time Grading
+Adjacent relays in the feeder chain must be coordinated with a minimum time
+grading margin of 0.3-0.4 seconds (per IEC 60255) between upstream and
+downstream devices. This ensures the relay closest to the fault operates
+first, minimizing the extent of the outage.
+
+4.2 Selectivity
+The protection scheme must achieve selectivity: only the relay immediately
+upstream of the fault should operate. If selectivity is lost (backup relay
+also operates), the coordination study must be revised.
+
+4.3 Backup Protection
+Each overcurrent relay must have a backup relay at the next upstream level.
+If the primary relay fails to clear the fault within its designated time plus
+breaker failure time (typically 150 ms), the backup relay shall operate.
+
+Section 5: Fault Clearance Procedure
+
+  Step 1: Overcurrent condition detected — relay pickup threshold exceeded.
+  Step 2: Relay timing element starts — operates per selected TCC curve.
+  Step 3: Relay issues trip signal to circuit breaker.
+  Step 4: Circuit breaker opens — fault current interrupted.
+  Step 5: Automatic reclosing (if enabled) — first reclose attempt after
+          dead time (typically 0.5-1.0 seconds).
+  Step 6: If fault persists after reclose — relay trips again (lockout).
+  Step 7: Operator notified via SCADA alarm — manual investigation required.
+
+Section 6: Post-Fault Analysis
+
+After any overcurrent event, the following data must be logged per IEC 61968
+data exchange standards:
+  - Fault current magnitude (kA) and duration (ms)
+  - Relay operation time and curve used
+  - Breaker operation time and number of reclose attempts
+  - Affected feeder and bus identifiers
+  - Probable cause (if determined)
+
+Section 7: Testing and Maintenance
+
+Overcurrent relay settings must be verified during commissioning and at
+intervals not exceeding 4 years (per IEC 60255-27). Secondary injection
+testing confirms pickup accuracy within ±5% and timing accuracy within ±5%.

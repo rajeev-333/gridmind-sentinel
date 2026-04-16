@@ -1,0 +1,123 @@
+Grid Operations Manual — General Operating Procedures
+======================================================
+
+Section 1: Scope
+
+This manual provides the general operating procedures for power grid control
+center operations, applicable to all voltage levels from distribution (11 kV)
+to transmission (400 kV). It covers normal operations, abnormal conditions,
+system monitoring, and coordination protocols between control areas.
+
+Section 2: Normal Operating Conditions
+
+2.1 System Parameters — Normal Ranges
+  Voltage:   0.95 - 1.05 per unit (± 5% of nominal)
+  Current:   0.00 - 1.00 per unit (below thermal rating)
+  Frequency: 49.80 - 50.20 Hz (for 50 Hz systems)
+  Power Factor: 0.85 - 1.00 lagging (normal load)
+  Active Power: Within scheduled dispatch ± 5%
+  Reactive Power: Within voltage schedule requirements
+
+2.2 Monitoring Intervals
+  SCADA scan rate: 2-4 seconds for critical measurements
+  Operator review cycle: Every 30 minutes (normal conditions)
+  Load forecast update: Every hour
+  Equipment inspection: Daily visual, monthly detailed
+
+Section 3: Abnormal Condition Response
+
+3.1 Severity Classification
+
+  LOW: Parameter slightly outside normal range. No immediate risk.
+       Example: Voltage at 0.93 pu (below 0.95 but above 0.90).
+       Action: Log and monitor. Auto-regulation expected to correct.
+
+  MEDIUM: Parameter significantly outside normal range. Equipment stress.
+          Example: Feeder loading at 110% for 30+ minutes.
+          Action: Alert operator. Initiate corrective actions within 15 min.
+
+  HIGH: Parameter at alarm level. Equipment or system at risk.
+        Example: Transformer hot spot > 130°C, or voltage < 0.85 pu.
+        Action: Immediate operator response. Supervisor notification.
+               Initiate load transfer or generation redispatch.
+
+  CRITICAL: Parameter at emergency level. Imminent failure or safety risk.
+            Example: Line fault with sustained arc, or frequency < 49.0 Hz.
+            Action: Automatic protection operation. Human-in-the-loop for
+                    any switching decisions. Senior engineer approval required.
+
+3.2 Escalation Protocol
+  Step 1: Control room operator detects abnormal condition.
+  Step 2: Classify severity per Section 3.1.
+  Step 3: If MEDIUM or higher — notify shift supervisor.
+  Step 4: If HIGH — notify area manager and engineering support.
+  Step 5: If CRITICAL — notify all management levels and regulatory body.
+
+Section 4: Load Management
+
+4.1 Load Shedding Priority
+When emergency load shedding is required, follow this priority sequence
+(shed lowest priority first):
+  Priority 1 (shed first): Industrial non-essential loads
+  Priority 2: Commercial air conditioning and non-critical loads
+  Priority 3: Residential non-essential loads
+  Priority 4: Industrial essential loads (continuous process)
+  Priority 5 (shed last): Hospitals, emergency services, water treatment
+
+4.2 Restoration Priority
+When restoring load after an emergency, reverse the shedding order:
+  Restore Priority 5 first (critical loads), then 4, 3, 2, 1.
+  Restore in 5% increments with 2-minute intervals between stages to
+  avoid cold load pickup surges.
+
+Section 5: Communication Protocols
+
+5.1 Operational Communication
+  - All switching orders: read back and confirm protocol.
+  - Use standard phonetic alphabet for equipment identifiers.
+  - Three-way communication: instruct → repeat back → confirm.
+  - All communications logged with timestamp.
+
+5.2 Emergency Communication
+  - Use dedicated emergency radio channel.
+  - State "EMERGENCY" at the start of each emergency transmission.
+  - Identify: Who is calling, what happened, where, and what is needed.
+  - Maintain communication channel open until emergency resolved.
+
+Section 6: Incident Reporting
+
+6.1 Immediate Report
+Within 1 hour of any significant event:
+  - Event type and location
+  - Time of occurrence and duration
+  - Equipment affected
+  - Customers affected (number and MW)
+  - Immediate actions taken
+
+6.2 Detailed Report
+Within 24 hours:
+  - Root cause analysis (preliminary)
+  - Chronological sequence of events
+  - Protection relay and breaker operation records
+  - Corrective actions planned
+  - Recommendations for prevention
+
+6.3 Investigation Report
+Within 30 days for HIGH and CRITICAL events:
+  - Complete root cause analysis
+  - Equipment inspection and test results
+  - Protection system performance assessment
+  - Regulatory compliance review
+  - Long-term corrective actions and timeline
+
+Section 7: Shift Operations
+
+7.1 Shift Handover
+  - Outgoing operator briefs incoming operator on:
+    - Current system status (all abnormal conditions)
+    - Ongoing events or maintenance activities
+    - Pending switching operations
+    - Equipment out of service
+    - Weather conditions affecting grid operations
+  - Both operators sign the shift log.
+  - Minimum 15-minute overlap for handover.

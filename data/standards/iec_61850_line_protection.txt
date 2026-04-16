@@ -1,0 +1,110 @@
+IEC 61850 — Transmission Line Protection Schemes
+===================================================
+
+Section 1: Scope
+
+This document describes the application of IEC 61850-based protection schemes
+for high-voltage transmission lines, including distance protection, differential
+protection, and pilot-aided schemes. It covers the logical node models, GOOSE
+communication requirements, and protection coordination for multi-terminal
+line configurations.
+
+Section 2: Distance Protection (ANSI 21)
+
+2.1 Operating Principle
+Distance relays measure the apparent impedance (V/I) at the relay location.
+A fault on the protected line causes a drop in measured impedance proportional
+to the distance from the relay to the fault point.
+
+2.2 Zone Settings
+  Zone 1: Set to reach 80-85% of the protected line impedance.
+          Operating time: instantaneous (< 30 ms after fault inception).
+          Purpose: primary protection for close-in and mid-line faults.
+
+  Zone 2: Set to reach 120-150% of the protected line impedance.
+          Operating time: 0.3-0.5 seconds time delay.
+          Purpose: backup for remote end of line and part of adjacent line.
+
+  Zone 3: Set to reach 100% of adjacent line impedance.
+          Operating time: 0.8-1.2 seconds time delay.
+          Purpose: remote backup (use with caution — may operate on load).
+
+2.3 Mho Characteristic
+The standard mho relay characteristic is a circle passing through the origin
+of the R-X diagram, with the diameter equal to the relay reach setting. The
+relay operates when the measured impedance falls within this circle.
+
+Section 3: Line Differential Protection (ANSI 87L)
+
+3.1 Operating Principle
+Line differential protection compares the current entering and leaving the
+protected line (Kirchhoff's Current Law). If the differential current exceeds
+a threshold, an internal fault is declared.
+
+  I_diff = |I_local + I_remote|
+  I_restraint = |I_local| + |I_remote|
+  Operate condition: I_diff > k × I_restraint + I_min
+
+Where k is the percentage restraint slope (typically 20-40%) and I_min is
+the minimum pickup current (typically 0.2-0.5 pu).
+
+3.2 Communication Requirements
+Per IEC 61850-9-2 (Sampled Values), the protection relay at each terminal
+must exchange current samples at 80 samples per cycle (4000 samples/second
+for 50 Hz systems). Communication latency must be < 5 ms for correct
+differential comparison. Channel delay asymmetry must be < 1 ms.
+
+3.3 Advantages Over Distance Protection
+  - No zone coordination required (absolute selectivity)
+  - Correct operation for all fault types including high-impedance faults
+  - Not affected by power swings or load flow
+  - No risk of over-reach or under-reach due to mutual coupling
+
+Section 4: Pilot-Aided Protection Schemes
+
+4.1 Permissive Overreach Transfer Trip (POTT)
+  Step 1: Local relay detects fault in Zone 2 (overreaching direction).
+  Step 2: Local relay sends permissive trip signal to remote terminal.
+  Step 3: Remote relay detects fault in its Zone 2 — confirms direction.
+  Step 4: Upon receiving permissive signal AND local detection — trips instantly.
+  
+  Advantages: Fast clearance for all internal faults. Secure against
+  external faults (requires confirmation from both ends).
+
+4.2 Directional Comparison Blocking (DCB)
+  Step 1: Local relay detects fault in overreaching zone.
+  Step 2: If remote relay sees fault in reverse direction — sends BLOCK signal.
+  Step 3: If no blocking signal received within 15-30 ms — local relay trips.
+  
+  Advantages: Functions on loss of communication channel (trips if no block
+  received). Suitable for single-channel pilot schemes.
+
+Section 5: IEC 61850 Logical Nodes for Line Protection
+
+  PDIS — Distance protection function
+  PDIF — Differential protection function
+  PTRC — Protection trip conditioning
+  PSCH — Protection scheme logic (pilot-aided)
+  RBRF — Breaker failure protection
+  RADR — Autorecloser function
+
+Each logical node is mapped to the IEC 61850 data model with standardized
+data objects and attributes, ensuring interoperability between relays from
+different manufacturers.
+
+Section 6: Autoreclosing (ANSI 79)
+
+For transient faults (80-90% of line faults are transient due to lightning
+or tree contact), auto-reclosing is applied:
+  - Single-shot reclose: dead time = 0.5-1.5 seconds
+  - Three-phase reclose: dead time = 1.0-3.0 seconds
+  - Synchro-check before reclose: angle difference < 20°, voltage > 0.85 pu
+  - If fault persists after reclose: lockout — manual investigation
+
+Section 7: Fault Location
+
+Impedance-based fault location: distance = (Z_measured / Z_line) × line_length
+Two-ended fault location (more accurate):
+  d = (Z_measured_local - Z_measured_remote + Z_total) / (2 × Z_total) × length
+
+Accuracy target: ±1% of line length for solid faults, ±3% for high-impedance.

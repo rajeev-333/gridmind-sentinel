@@ -1,0 +1,119 @@
+IEC 61968 — Emergency Switching Procedures and Safety Protocols
+================================================================
+
+Section 1: Scope
+
+This document defines the emergency switching procedures for medium-voltage
+and high-voltage power distribution systems per IEC 61968 (Application
+Integration at Electric Utilities), IEC 62271 (High-Voltage Switchgear and
+Controlgear), and applicable safety regulations. Emergency switching is
+performed to isolate faults, restore service, or protect personnel, and
+carries inherent risk of equipment damage or personnel injury if not
+executed correctly.
+
+Section 2: Types of Emergency Switching Operations
+
+2.1 Fault Isolation Switching
+Performed to isolate a faulted section of the network to:
+  - Prevent damage propagation to adjacent equipment
+  - Protect personnel from energized fault conditions
+  - Enable safe access for repair crews
+
+2.2 Emergency Load Transfer
+Performed when a transformer or feeder must be de-energized urgently:
+  - Transfer load to alternate supply before de-energization
+  - Sequence: close tie → verify parallel operation → open original supply
+
+2.3 Emergency De-Energization
+Performed when immediate disconnection is required:
+  - Equipment fire or explosion
+  - Live conductor down on public area
+  - Oil spill from transformer (fire/environmental hazard)
+  - Personnel electric shock incident
+
+Section 3: Safety Prerequisites
+
+BEFORE any switching operation, the following MUST be verified:
+
+3.1 Authorization
+  - All switching operations require authorization from the control center.
+  - CRITICAL operations (de-energization, breaker operation, transformer
+    isolation) require supervisor approval.
+  - Written switching order must be issued and read back by the field operator.
+
+3.2 Equipment Verification
+  - Verify correct identification of the equipment to be switched.
+  - Confirm single-line diagram matches field conditions.
+  - Check protection relay settings and status indicators.
+  - Verify that automatic reclosing is DISABLED on all relevant breakers
+    before manual switching begins.
+
+3.3 Personnel Safety
+  - All personnel must wear appropriate PPE (Class E gloves, face shield,
+    flame-resistant clothing) for the voltage class being switched.
+  - Minimum approach distances per IEC 61472:
+    11 kV: 0.7 m     33 kV: 1.0 m     66 kV: 1.4 m
+    132 kV: 2.0 m    220 kV: 3.0 m    400 kV: 4.5 m
+  - A safety observer must be present during all HV switching operations.
+
+Section 4: Emergency Switching Procedure
+
+Step 1: RECEIVE — Emergency switching request received from operator or
+        automatic protection system.
+
+Step 2: ASSESS — Evaluate the urgency and scope:
+  - Immediate danger to life? → proceed to emergency de-energization
+  - Equipment at risk? → determine isolation boundary
+  - Can load be transferred first? → minimize customer outage
+
+Step 3: AUTHORIZE — Obtain switching order from control center:
+  - Identify all switches/breakers in the switching sequence
+  - Specify the sequence of operations (open/close order)
+  - Identify isolation points and grounding locations
+
+Step 4: COMMUNICATE — Notify all affected parties:
+  - Field crews in the vicinity
+  - Adjacent control centers (for inter-tie operations)
+  - Customer service (for planned outage notification if time permits)
+
+Step 5: EXECUTE — Perform switching operations:
+  - Execute each step of the switching order in sequence
+  - Provide positive confirmation after each operation
+  - Verify de-energization with voltage detector at each isolation point
+  - Apply safety grounds after confirmed de-energization
+
+Step 6: VERIFY — Post-switching verification:
+  - Confirm all intended circuits are de-energized/energized correctly
+  - Check voltage levels and loading on transferred circuits
+  - Verify no overloads on alternate supply paths
+
+Step 7: DOCUMENT — Record all details:
+  - Switching order number and authorization
+  - Exact time of each switching operation
+  - Equipment operated (device ID, location)
+  - Personnel involved
+  - Any abnormal conditions observed
+
+Section 5: Prohibited Operations
+
+The following operations are PROHIBITED without explicit engineering approval:
+  - Closing a breaker onto a known fault condition
+  - Operating a switch under load beyond its rated breaking capacity
+  - Energizing a grounded circuit
+  - Paralleling two sources without synchronism check
+  - Operating equipment with known defects (broken insulators, leaking oil)
+
+All prohibited operation attempts must be logged as safety incidents.
+
+Section 6: Post-Emergency Restoration
+
+After the emergency condition is resolved:
+  Step 1: Remove safety grounds in reverse order of application.
+  Step 2: Verify insulation integrity before re-energization (megger test
+          if equipment was opened or exposed).
+  Step 3: Re-energize in stages — energize each section under no-load first,
+          then restore load incrementally.
+  Step 4: Monitor for 15 minutes after restoration — verify voltage and
+          current are within normal ranges.
+  Step 5: Re-enable automatic reclosing on relevant breakers.
+  Step 6: Submit post-incident report within 24 hours.

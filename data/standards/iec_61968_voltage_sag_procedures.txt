@@ -1,0 +1,87 @@
+IEC 61968 — Voltage Sag Detection and Recovery Procedures
+=========================================================
+
+Section 1: Scope and Applicability
+
+This document specifies the procedures for detecting, classifying, and mitigating
+voltage sag events in medium-voltage and high-voltage distribution networks, as
+defined under IEC 61968 Part 9 (Interfaces for Metering and Control). Voltage sags
+(also known as voltage dips per IEC 61000-4-30) are short-duration reductions in
+RMS voltage magnitude, typically lasting from half a cycle (10 ms at 50 Hz) to
+one minute.
+
+Section 2: Classification of Voltage Sag Events
+
+Voltage sags are classified by magnitude and duration according to the ITIC
+(CBEMA) curve and the IEC 61000-2-8 compatibility framework:
+
+  Type A — Shallow Sag: Voltage drops to 80-90% of nominal (0.80-0.90 pu).
+           Duration: 0.5 to 30 cycles. Common cause: remote fault clearing.
+           Severity: LOW. No immediate operator action required.
+
+  Type B — Moderate Sag: Voltage drops to 50-80% of nominal (0.50-0.80 pu).
+           Duration: 3 to 30 cycles. Common cause: nearby single-line-to-ground
+           (SLG) fault or transformer energization inrush.
+           Severity: MEDIUM. Operator should monitor and log.
+
+  Type C — Deep Sag: Voltage drops below 50% of nominal (< 0.50 pu).
+           Duration: 1 to 60 cycles. Common cause: multi-phase fault on
+           adjacent feeder or bus fault.
+           Severity: HIGH to CRITICAL. Immediate investigation required.
+
+Section 3: Detection Methodology
+
+3.1 Per-Unit Voltage Monitoring
+The protection system shall continuously monitor per-unit voltage at each bus.
+Normal operating range: 0.95 to 1.05 pu. A voltage sag event is declared when
+the RMS voltage drops below 0.90 pu for more than 0.5 cycles.
+
+3.2 Wavelet-Based Detection
+Discrete Wavelet Transform (DWT) using Daubechies-4 (db4) mother wavelet is
+recommended for transient detection. The detail coefficients at decomposition
+levels 1-3 capture the high-frequency transient signature of voltage sag onset.
+A threshold on the energy of level-1 detail coefficients provides reliable
+sag detection with less than 2 ms latency.
+
+3.3 Event Timestamping
+All sag events must be timestamped using GPS-synchronized clocks (per IEEE
+C37.118.1 synchrophasor standard) with accuracy better than 1 microsecond.
+
+Section 4: Recovery Procedures
+
+4.1 Automatic Voltage Regulation (AVR)
+For Type A sags, the on-load tap changer (OLTC) of the supply transformer should
+automatically adjust within 3-5 tap change operations to restore voltage to the
+0.95-1.05 pu band. Response time: typically 30-90 seconds.
+
+4.2 Capacitor Bank Switching
+For Type B sags, automatic capacitor bank switching shall be initiated to provide
+reactive power compensation. The switched capacitor banks should inject sufficient
+MVAr to raise bus voltage by 0.02-0.05 pu per bank. A minimum inter-switching
+interval of 300 ms must be maintained to prevent overvoltage transients.
+
+4.3 Manual Intervention for Deep Sags
+Type C sags require operator assessment. The following checklist applies:
+  Step 1: Confirm sag magnitude and affected buses via SCADA display.
+  Step 2: Check protection relay operation logs for upstream fault indication.
+  Step 3: Verify whether automatic reclosing has restored the faulted circuit.
+  Step 4: If the sag persists, check load transfer options to alternate feeders.
+  Step 5: If load transfer is required, obtain dispatcher approval before
+          initiating switching operations (IEC 61968 safety protocol).
+  Step 6: Document the event in the disturbance log with timestamp, duration,
+          magnitude, and corrective actions taken.
+
+Section 5: Coordination with Protection Systems
+
+Voltage sag recovery must be coordinated with overcurrent protection relay
+settings (IEEE C37.112) to avoid nuisance tripping during OLTC adjustments or
+capacitor switching. Time-current coordination studies should be reviewed
+quarterly to ensure selectivity is maintained.
+
+Section 6: Reporting Requirements
+
+All voltage sag events with magnitude below 0.85 pu or duration exceeding
+10 cycles must be reported in the monthly power quality report per IEC 61968
+Part 9 data exchange format. The report shall include: event timestamp, bus ID,
+sag magnitude (pu), sag duration (cycles), probable cause, and corrective
+action taken.

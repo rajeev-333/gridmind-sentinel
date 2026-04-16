@@ -1,0 +1,44 @@
+# === Secrets & Environment ===
+.env
+.env.local
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# === Virtual Environments ===
+venv/
+env/
+.venv/
+
+# === Data (generated / large binary files) ===
+data/chroma_db/
+data/faiss_index/
+data/gridmind.db
+data/simulated/
+
+# === Testing / Coverage ===
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Streamlit secrets (local only) ===
+.streamlit/secrets.toml

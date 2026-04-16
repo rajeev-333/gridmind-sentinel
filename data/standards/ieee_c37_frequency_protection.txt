@@ -1,0 +1,89 @@
+IEEE C37.118 — Frequency Protection and Under/Over-Frequency Relay Procedures
+===============================================================================
+
+Section 1: Scope
+
+This document specifies frequency protection requirements for synchronous
+generators and interconnected power systems per IEEE C37.102 (AC Generator
+Protection) and IEEE C37.118.1 (Synchrophasor Measurements). Frequency
+deviations beyond normal operating bands indicate generation-load imbalance
+and may lead to system instability if not addressed promptly.
+
+Section 2: Normal Operating Frequency Bands
+
+For 50 Hz systems (IEC standard):
+  Normal range: 49.80 - 50.20 Hz (±0.4%)
+  Caution range: 49.50 - 49.80 Hz or 50.20 - 50.50 Hz
+  Alert range: 49.00 - 49.50 Hz or 50.50 - 51.00 Hz
+  Emergency range: Below 49.00 Hz or above 51.00 Hz
+
+For 60 Hz systems (IEEE/NERC standard):
+  Normal range: 59.95 - 60.05 Hz
+  Caution range: 59.90 - 59.95 Hz or 60.05 - 60.10 Hz
+  Alert range: 59.50 - 59.90 Hz or 60.10 - 60.50 Hz
+  Emergency range: Below 59.50 Hz or above 60.50 Hz
+
+Section 3: Causes of Frequency Deviation
+
+3.1 Under-Frequency Causes
+  - Sudden loss of generation (generator trip, fuel supply interruption)
+  - Unexpected load increase beyond spinning reserve capacity
+  - Islanding of a load-heavy subsystem
+  - Transmission line trip disconnecting generation source
+
+3.2 Over-Frequency Causes
+  - Sudden load rejection (large load trip or feeder disconnect)
+  - Governor control malfunction causing excess generation
+  - Islanding of a generation-heavy subsystem
+
+Section 4: Under-Frequency Load Shedding (UFLS)
+
+4.1 UFLS Scheme Design
+Per IEEE C37.117 (Guide for Application of UFLS), the UFLS scheme shall:
+  - Shed load in discrete stages (3 to 6 stages recommended)
+  - Total load shed capacity: 25-35% of system peak load
+  - Each stage sheds 5-7% of load
+  - Frequency thresholds set with 0.2-0.5 Hz intervals between stages
+
+4.2 UFLS Settings (50 Hz System Example)
+  Stage 1: 49.30 Hz — shed 6% of load — time delay: 0.3 s
+  Stage 2: 49.00 Hz — shed 7% of load — time delay: 0.3 s
+  Stage 3: 48.70 Hz — shed 7% of load — time delay: 0.3 s
+  Stage 4: 48.50 Hz — shed 5% of load — time delay: 0.2 s
+  Stage 5: 48.20 Hz — shed 5% of load — time delay: 0.2 s (emergency)
+
+4.3 Rate-of-Change-of-Frequency (ROCOF) Protection
+ROCOF relays provide faster detection of islanding and severe disturbances.
+Setting: df/dt > 0.5 Hz/s for 100 ms — initiates immediate load shed or
+generator disconnect. Typical ROCOF relay response time: 80-120 ms.
+
+Section 5: Over-Frequency Protection
+
+5.1 Generator Over-Frequency Limits
+Per IEEE C37.102, synchronous generators must operate continuously within
+±0.5 Hz of nominal. Sustained operation above 51.0 Hz (50 Hz system) risks:
+  - Turbine blade damage from mechanical resonance
+  - Turbine overspeed trip activation
+  - Transformer core saturation (V/Hz ratio exceeds rated value)
+
+5.2 Over-Frequency Protection Settings
+  Stage 1: 50.50 Hz — alarm only — time delay: 5.0 s
+  Stage 2: 51.00 Hz — generator runback command — time delay: 1.0 s
+  Stage 3: 51.50 Hz — generator trip — time delay: 0.3 s
+
+Section 6: Frequency Measurement Requirements
+
+Per IEEE C37.118.1, synchrophasor-based frequency measurement shall provide:
+  - Reporting rate: ≥ 10 frames per second (fps)
+  - Frequency accuracy: ≤ 0.005 Hz under steady-state conditions
+  - ROCOF accuracy: ≤ 0.01 Hz/s under steady-state conditions
+  - Total Vector Error (TVE): ≤ 1% for P-class, ≤ 1% for M-class
+
+Section 7: Operator Response Procedures
+
+  Step 1: Frequency deviation alarm received — confirm on SCADA display.
+  Step 2: Determine if deviation is system-wide or localized (island).
+  Step 3: For under-frequency — verify UFLS operation, confirm load shed.
+  Step 4: For over-frequency — verify governor response, check for load loss.
+  Step 5: Coordinate with neighboring control areas (ACE exchange per NERC).
+  Step 6: Log event with timestamp, frequency nadir/peak, cause, actions taken.

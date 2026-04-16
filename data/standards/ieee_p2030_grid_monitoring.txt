@@ -1,0 +1,100 @@
+IEEE P2030 — Smart Grid Monitoring and Distributed Energy Resource Integration
+================================================================================
+
+Section 1: Scope
+
+This document provides guidelines for monitoring and control of smart grid
+systems with integrated Distributed Energy Resources (DER) per IEEE P2030
+(Guide for Smart Grid Interoperability) and IEEE 1547 (Standard for
+Interconnection and Interoperability of DER with Power Systems). It addresses
+the monitoring infrastructure, data exchange protocols, and operational
+procedures for grids with high DER penetration.
+
+Section 2: Monitoring Architecture
+
+2.1 Monitoring Layers
+  Layer 1 — Field Devices: Smart meters (AMI), distribution line sensors,
+            DER inverter telemetry, weather stations, PMUs.
+  Layer 2 — Communication Network: Fiber optic, cellular (4G/5G), RF mesh,
+            power line communication (PLC) per IEEE 1901.
+  Layer 3 — Data Aggregation: SCADA master station, Distribution Management
+            System (DMS), Advanced DMS (ADMS).
+  Layer 4 — Analytics: State estimation, voltage optimization, fault
+            prediction, DER dispatch optimization.
+
+2.2 Key Monitored Parameters
+  Bus-level: Voltage (pu), current (pu), frequency (Hz), active power (MW),
+             reactive power (MVAr), power factor.
+  Feeder-level: Loading percentage, loss percentage, switch status.
+  DER-level: Inverter output (kW, kVAr), state of charge (SOC for batteries),
+             generation forecast (solar/wind).
+
+Section 3: DER Impact on Grid Monitoring
+
+3.1 Voltage Rise
+High DER penetration causes reverse power flow on distribution feeders,
+leading to voltage rise at the point of common coupling (PCC). Monitoring
+must detect:
+  - Steady-state voltage exceeding 1.05 pu at any node
+  - Voltage fluctuations due to cloud transients (solar PV) — rate of
+    change > 0.03 pu/second
+  - Voltage unbalance exceeding 2% (negative sequence / positive sequence)
+
+3.2 Protection Coordination Challenges
+DER fault current contribution alters the original protection coordination:
+  - Increased fault current may cause upstream relay to trip before
+    downstream fuse (fuse saving scheme failure)
+  - Reduced fault current from weak grid (low short-circuit ratio) may cause
+    relay under-reach
+  - Bi-directional current flow requires directional overcurrent protection
+
+3.3 Islanding Detection
+Unintentional islanding must be detected within 2 seconds per IEEE 1547.
+Active detection methods:
+  - Sandia Frequency Shift (SFS)
+  - Slip-Mode Frequency Shift (SMS)
+  - Active frequency drift (AFD)
+Passive detection methods:
+  - Over/under voltage (OVP/UVP)
+  - Over/under frequency (OFP/UFP)
+  - Rate of change of frequency (ROCOF)
+  - Vector surge
+
+Section 4: Real-Time Monitoring Procedures
+
+4.1 Normal Operations Monitoring
+  Step 1: All bus voltages within 0.95-1.05 pu — GREEN status.
+  Step 2: All feeder loadings below 80% of thermal rating — GREEN status.
+  Step 3: DER output within forecast ± 20% — NORMAL indication.
+  Step 4: System frequency within 49.95-50.05 Hz — no action.
+
+4.2 Abnormal Condition Monitoring
+  Step 5: If any bus voltage exceeds 1.05 pu — issue VOLTAGE HIGH alarm.
+  Step 6: If any feeder loading exceeds 80% — issue LOADING CAUTION.
+  Step 7: If DER output drops > 30% of forecast within 5 minutes — issue
+          SOLAR RAMP alert — prepare spinning reserve activation.
+  Step 8: If frequency deviates beyond 49.80-50.20 Hz — issue FREQUENCY
+          DEVIATION alarm — escalate to balancing authority.
+
+Section 5: Data Exchange Standards
+
+All monitoring data shall be exchanged using:
+  - IEC 61850 (substation level): GOOSE for protection, MMS for SCADA
+  - IEC 61968/61970 CIM (utility level): XML/JSON data model
+  - IEEE 2030.5 (DER level): Smart Energy Profile for DER management
+  - OpenADR (demand response): Automated demand response signaling
+
+Data update rates:
+  - Protection signals: ≤ 4 ms (IEC 61850 GOOSE)
+  - SCADA telemetry: 2-4 second scan rate
+  - AMI metering: 15-minute intervals
+  - PMU measurements: 10-60 frames per second (IEEE C37.118)
+
+Section 6: Grid Monitoring Best Practices
+
+  1. Deploy voltage monitoring at every DER POI above 100 kW.
+  2. Install line sensors at 25% intervals along feeders with > 30% DER.
+  3. Configure SCADA alarms for reverse power flow detection.
+  4. Implement state estimation with DER model integration.
+  5. Maintain monitoring data retention for minimum 1 year.
+  6. Review protection coordination annually for feeders with new DER.

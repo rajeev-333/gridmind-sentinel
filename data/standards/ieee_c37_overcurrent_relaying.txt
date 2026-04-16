@@ -1,0 +1,103 @@
+IEEE C37.112 — Overcurrent Relaying and Relay Coordination
+===========================================================
+
+Section 1: Scope
+
+This document provides guidelines for the application and coordination of
+overcurrent relays in power distribution systems per IEEE C37.112 (Standard
+for Inverse-Time Characteristic Equations for Overcurrent Relays). It covers
+relay selection, setting calculations, coordination studies, and testing
+procedures for both electromechanical and numerical protection relays.
+
+Section 2: Relay Types and Applications
+
+2.1 Non-Directional Overcurrent Relay (ANSI 50/51)
+  - ANSI 50: Instantaneous overcurrent — fixed time, no intentional delay
+  - ANSI 51: Time-overcurrent — inverse-time characteristic
+  Application: Radial feeders where fault current flows in one direction only.
+
+2.2 Directional Overcurrent Relay (ANSI 67)
+  Application: Loop or networked systems where fault current may flow in
+  either direction. Uses voltage polarization to determine fault direction.
+
+2.3 Ground Fault Relay (ANSI 50N/51N)
+  Application: Detection of ground faults with lower fault current magnitude.
+  Pickup typically set at 10-20% of phase relay pickup to detect high-impedance
+  ground faults.
+
+Section 3: IEEE C37.112 Standard Inverse-Time Equations
+
+The standard defines the following inverse-time characteristic equation:
+
+  t = TDS × (A / (M^p - 1) + B)
+
+Where:
+  t = relay operating time (seconds)
+  TDS = Time Dial Setting (0.5 to 15.0)
+  M = I_fault / I_pickup (multiples of pickup)
+  A, p, B = curve constants per relay characteristic:
+
+  Moderately Inverse:  A = 0.0515,  p = 0.02,   B = 0.114
+  Very Inverse:        A = 19.61,   p = 2.0,    B = 0.491
+  Extremely Inverse:   A = 28.2,    p = 2.0,    B = 0.1217
+  Short-Time Inverse:  A = 0.00342, p = 0.02,   B = 0.00262
+
+Section 4: Setting Calculation Procedure
+
+4.1 Determine Maximum Load Current
+  I_load_max = (MVA_rated × 1000) / (√3 × kV_rated)
+  Include a 10-15% margin for cold load pickup and load growth.
+
+4.2 Set Relay Pickup
+  I_pickup = 1.25 to 1.50 × I_load_max
+  The CT ratio must be selected so that I_pickup falls within the relay's
+  settable range (typically 0.5-16A for 5A CT secondary).
+
+4.3 Select Time Dial Setting (TDS)
+  The TDS is determined by the coordination time interval (CTI) with the
+  downstream device. Standard CTI = 0.3 seconds for numerical relays,
+  0.4 seconds for electromechanical relays.
+
+4.4 Set Instantaneous Element (ANSI 50)
+  I_inst = 1.25 × I_fault_max_at_downstream_bus
+  This ensures the instantaneous element does not reach into the
+  protection zone of the downstream relay.
+
+Section 5: Coordination Study Procedure
+
+  Step 1: Obtain single-line diagram and fault current study data.
+  Step 2: Determine maximum and minimum fault currents at each relay location.
+  Step 3: Starting from the most downstream device, set pickup and TDS.
+  Step 4: Coordinate each upstream relay with the one below it:
+          t_upstream = t_downstream + CTI (at maximum fault current seen
+          by the downstream device).
+  Step 5: Plot all relay curves on a common time-current diagram (log-log scale).
+  Step 6: Verify that no relay curves cross within the fault current range.
+  Step 7: Verify that instantaneous elements provide selective coverage.
+  Step 8: Document settings in the relay setting database.
+
+Section 6: Relay Testing Requirements
+
+Per IEEE C37.112 and utility standards:
+  - Pickup accuracy: ±3% of set value
+  - Timing accuracy: ±5% of calculated operating time (at 3× and 10× pickup)
+  - Instantaneous element accuracy: ±5% of set value
+  - Testing frequency: upon commissioning and every 4 years thereafter
+  - Test method: secondary injection using calibrated relay test set
+
+Section 7: Common Coordination Problems
+
+7.1 Fuse-Relay Coordination
+The relay must be set to coordinate with downstream fuses. The relay curve
+must lie above the fuse total clearing curve at all fault current levels
+seen by the fuse. Rule: relay time ≥ fuse clearing time + 0.2 s margin.
+
+7.2 Recloser-Relay Coordination
+Where automatic reclosers are used, the relay fast curve must be above the
+recloser fast curve, and the relay slow curve must be above the recloser
+slow curve. Multi-shot recloser sequences (1 fast + 2 slow) add complexity.
+
+7.3 Loss of Selectivity
+If upstream and downstream relays have overlapping curves, both may operate
+for the same fault. This results in unnecessary outage of upstream loads.
+Resolution: adjust TDS, change curve type, or add directional element.

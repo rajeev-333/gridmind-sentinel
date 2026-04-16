@@ -1,0 +1,94 @@
+IEC 61850 — Fault Isolation and Service Restoration Procedures
+===============================================================
+
+Section 1: Scope
+
+This document specifies the fault isolation and service restoration (FISR)
+procedures for medium-voltage distribution networks using IEC 61850
+communication-based protection and automation. It covers the GOOSE
+(Generic Object Oriented Substation Event) messaging protocol for high-speed
+peer-to-peer communication between intelligent electronic devices (IEDs).
+
+Section 2: FISR Architecture
+
+2.1 System Components
+The FISR system comprises the following IEC 61850 logical nodes:
+  - PTOC (Time Overcurrent Protection) — detects fault current
+  - PDIS (Distance Protection) — calculates fault location by impedance
+  - CSWI (Switch Controller) — controls circuit breaker and switch operations
+  - CILO (Interlocking) — enforces switching interlocks for safety
+  - RSYN (Synchronism Check) — verifies phase angle alignment before closing
+
+2.2 Communication
+All inter-IED communication uses GOOSE messages per IEC 61850-8-1 with
+a maximum transfer time of 3 ms for Type 1A (trip) messages. The GOOSE
+publish-subscribe model ensures deterministic, low-latency fault indication
+sharing between protection relays.
+
+Section 3: Fault Isolation Procedure
+
+3.1 Fault Detection Phase
+  Step 1: Protection relay detects overcurrent or impedance anomaly.
+  Step 2: Relay publishes GOOSE trip message to upstream breaker.
+  Step 3: Breaker opens within 50-80 ms of relay operation.
+  Step 4: Fault presence confirmed by sustained current interruption.
+
+3.2 Fault Location Phase
+  Step 5: Distance relay (PDIS) calculates fault impedance to estimate
+          fault location along the feeder (accuracy: ±2% of line length).
+  Step 6: Fault indicator devices along the feeder confirm the faulted
+          section (directional overcurrent principle).
+  Step 7: FISR controller identifies the faulted section and adjacent
+          switches for isolation.
+
+3.3 Isolation Phase
+  Step 8: FISR controller commands the two switches flanking the faulted
+          section to open (via CSWI logical node).
+  Step 9: CILO interlocking logic verifies that each switch operation
+          does not create an unsafe condition (parallel feed, backfeed,
+          or phase mismatch).
+  Step 10: Switches open — faulted section isolated from both sides.
+
+3.4 Safety Verification
+  Step 11: Voltage absence confirmed on the isolated section via VT
+           (Voltage Transformer) readings — voltage must be < 0.05 pu.
+  Step 12: Grounding procedure initiated if field crew access is needed.
+
+Section 4: Service Restoration Procedure
+
+4.1 Automated Restoration
+  Step 13: FISR controller identifies alternate supply path (normally-open
+           tie switch to adjacent feeder).
+  Step 14: RSYN (Synchronism Check) verifies phase angle difference between
+           the live bus and the dead bus is within ±10 degrees.
+  Step 15: Tie switch closes — load transferred to alternate feeder.
+  Step 16: Voltage and current on the restored section verified within
+           normal operating ranges (V: 0.95-1.05 pu, I: < 1.0 pu).
+
+4.2 Manual Restoration
+If automated restoration fails or is not available:
+  Step 17: Operator reviews SCADA topology display for available paths.
+  Step 18: Operator issues switching orders per utility switching protocol.
+  Step 19: Each switching operation requires positive confirmation from
+           the field before proceeding to the next step.
+  Step 20: Post-restoration load check — verify no feeder section is
+           overloaded beyond its thermal rating.
+
+Section 5: Safety Interlocking Rules (CILO)
+
+The following operations MUST be blocked by the interlocking logic:
+  - Closing a breaker onto a known fault (fault current still detected)
+  - Parallel closing two sources without synchronism verification
+  - Opening a load-break switch under fault current conditions
+  - Closing a grounding switch while the section is energized
+
+All blocked operations must be logged with timestamp, device ID, and
+reason code per IEC 61850 quality attributes.
+
+Section 6: Performance Requirements
+
+  - Fault detection to isolation: ≤ 500 ms
+  - Isolation to restoration: ≤ 60 seconds (automated FISR)
+  - Total FISR time (detection to restoration): ≤ 90 seconds
+  - GOOSE message delivery: ≤ 3 ms (Type 1A)
+  - System availability: ≥ 99.99%

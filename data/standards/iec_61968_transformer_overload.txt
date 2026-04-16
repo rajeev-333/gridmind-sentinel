@@ -1,0 +1,96 @@
+IEC 61968 — Transformer Overload Detection and Management
+===========================================================
+
+Section 1: Scope
+
+This document specifies the procedures for monitoring, detecting, and managing
+transformer overload conditions in power distribution systems per IEC 61968
+(Application Integration at Electric Utilities) and IEC 60076 (Power
+Transformers). Transformer overloads degrade insulation life and may lead
+to catastrophic failure if not managed properly.
+
+Section 2: Transformer Thermal Characteristics
+
+2.1 Temperature Limits (Oil-Immersed Transformers, per IEC 60076-7)
+  - Top Oil Temperature (TOT) normal limit: 95°C ambient + 65°C rise = 105°C max
+  - Hot Spot Temperature (HST) normal limit: 120°C
+  - Emergency overload HST limit: 140°C (for up to 30 minutes)
+  - Critical HST limit: 160°C — immediate de-energization required
+
+2.2 Loading Limits
+  Normal Continuous Rating: 100% MVA (1.00 pu load)
+  Planned Overload: Up to 120% for 4 hours (1.20 pu) — per IEC 60076-7
+  Emergency Overload: Up to 150% for 30 minutes (1.50 pu) — accelerated aging
+  Short-Time Emergency: Up to 180% for 5 minutes (1.80 pu) — insulation risk
+
+Section 3: Overload Detection
+
+3.1 Current-Based Detection
+The transformer load current is monitored continuously via CTs on the LV side.
+An overload condition is declared when:
+  Level 1 (Caution): Load current exceeds 100% of rated for > 1 hour
+  Level 2 (Warning): Load current exceeds 120% of rated for > 15 minutes
+  Level 3 (Alarm): Load current exceeds 140% of rated for any duration
+  Level 4 (Trip): Load current exceeds 180% of rated — immediate action
+
+3.2 Thermal Model-Based Detection
+The top oil temperature and hot spot temperature are calculated using the
+IEC 60076-7 thermal model, which considers:
+  - Ambient temperature
+  - Load current (square law heating)
+  - Thermal time constants (oil: 60-180 min, winding: 5-10 min)
+  - Cooling mode (ONAN, ONAF, OFAF)
+
+3.3 Dissolved Gas Analysis (DGA)
+For chronic overload conditions, periodic DGA sampling of transformer oil
+detects incipient faults. Key gas indicators:
+  - Hydrogen (H2): partial discharge or overheating
+  - Ethylene (C2H4): hot metal overheating (> 300°C)
+  - Acetylene (C2H2): arcing — requires immediate investigation
+
+Section 4: Overload Management Procedures
+
+4.1 Level 1 Response (Caution — 100-120%)
+  Step 1: Log the overload event with timestamp and loading level.
+  Step 2: Check cooling system status — ensure all fans/pumps are running.
+  Step 3: Switch cooling mode from ONAN to ONAF if available.
+  Step 4: Monitor top oil temperature trend — no immediate action if
+          temperature is within normal limits.
+
+4.2 Level 2 Response (Warning — 120-140%)
+  Step 1: Alert operator via SCADA alarm.
+  Step 2: Verify ambient temperature — hotter ambient reduces overload capacity.
+  Step 3: Initiate load transfer to reduce loading on the overloaded unit:
+          - Identify parallel transformer or alternate feeder path
+          - Transfer 20-30% of load to bring the unit below 100%
+  Step 4: If load transfer is not possible, prepare for load shedding on
+          non-critical feeders.
+
+4.3 Level 3 Response (Alarm — 140-180%)
+  Step 1: Immediate operator notification — supervisor approval required.
+  Step 2: Forced load shedding — disconnect lowest priority feeders to
+          reduce load below 120%.
+  Step 3: Monitor hot spot temperature — if HST exceeds 140°C, prepare
+          for de-energization.
+  Step 4: Send field crew to inspect transformer for signs of distress
+          (oil leaks, discoloration, abnormal noise).
+
+4.4 Level 4 Response (Trip — >180%)
+  Step 1: Automatic protection relay operation — transformer trip.
+  Step 2: Verify all breakers have opened successfully.
+  Step 3: Block automatic reclosing — do not re-energize until inspected.
+  Step 4: Initiate emergency load transfer to restore supply via
+          alternate transformers.
+  Step 5: Conduct post-trip inspection: oil temperature, DGA sampling,
+          winding resistance measurement.
+
+Section 5: Insulation Life Assessment
+
+Per IEC 60076-7, the relative aging rate of transformer insulation doubles
+for every 6°C rise in hot spot temperature above 98°C:
+  - At 98°C HST: aging rate = 1.0 (normal life: 20-30 years)
+  - At 104°C HST: aging rate = 2.0 (twice normal aging)
+  - At 110°C HST: aging rate = 4.0
+  - At 140°C HST: aging rate = hundreds — emergency only
+
+The accumulated loss of life must be tracked and reported quarterly.
